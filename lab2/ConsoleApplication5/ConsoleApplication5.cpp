@@ -1,34 +1,65 @@
-﻿#include <stdio.h> 
-#include <windows.h> 
+﻿#include <iostream>
+#include <Windows.h>
+#include <conio.h>
 
-HANDLE hEvent1, hEvent2;
-int a[5];
-HANDLE hThr;
-unsigned long uThrID;
+using namespace std;
 
-void Thread(void* pParams)
+#define pause() cout << "Press any key to continue..." << endl; _getch()
+
+CRITICAL_SECTION cs;
+
+DWORD WINAPI thread(LPVOID)
 {
-    int i, num = 0;
+    int i, j;
 
-    while (num < 20)
+    for (j = 0; j < 10; j++)
     {
-        WaitForSingleObject(hEvent2, INFINITE);
-        for (i = 0; i < 5; i++) a[i] = num;
-        num++;
-        SetEvent(hEvent1);
+        EnterCriticalSection(&cs);
+
+        for (i = 0; i < 10; i++)
+        {
+            cout << j << ' ' << flush;
+            Sleep(17);
+        }
+        cout << endl;
+
+        LeaveCriticalSection(&cs);
     }
+
+    return 0;
 }
-int main(void)
+
+int main()
 {
-    hEvent1 = CreateEvent(NULL, FALSE, TRUE, NULL);
-    hEvent2 = CreateEvent(NULL, FALSE, FALSE, NULL);
-    hThr = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Thread, NULL, 0, &uThrID);
-    while (1)
+    int i, j;
+    HANDLE hThread;
+    DWORD IDThread;
+
+    InitializeCriticalSection(&cs);
+
+    hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)thread, NULL, 0, &IDThread);
+    if (hThread == NULL)
     {
-        WaitForSingleObject(hEvent1, INFINITE);
-        Sleep(1000);
-        printf("%d %d %d %d %d\n", a[0], a[1], a[2], a[3], a[4]);
-        SetEvent(hEvent2);
+        cout << "Error of creating new thread..." << endl;
+        pause();
+        return GetLastError();
     }
+
+    for (j = 0; j < 20; j++)
+    {
+        EnterCriticalSection(&cs);
+        for (i = 0; i < 10; i++)
+        {
+            cout << j << ' ' << flush;
+            Sleep(17);
+        }
+
+        cout << endl;
+        LeaveCriticalSection(&cs);
+    }
+
+    WaitForSingleObject(hThread, 0xFFFFFFFF);
+    DeleteCriticalSection(&cs);
+    pause();
     return 0;
 }
