@@ -1,0 +1,2 @@
+C:\Users\In\source\repos\ConsoleApplication10\Debug\ConsoleApplication10.exe
+C:\Users\In\source\repos\ConsoleApplication10\Debug\ConsoleApplication10.pdb

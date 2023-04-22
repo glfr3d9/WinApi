@@ -1,0 +1,2 @@
+C:\Users\In\source\repos\ConsoleApplication9\Debug\ConsoleApplication9.exe
+C:\Users\In\source\repos\ConsoleApplication9\Debug\ConsoleApplication9.pdb
